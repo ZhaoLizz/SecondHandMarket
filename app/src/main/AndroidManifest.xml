@@ -42,7 +42,10 @@
             android:name=".RegisterActivity"
             android:label="Register">
         </activity>
-
+        <activity
+            android:name=".PublishActivity"
+            android:label="@string/title_activity_publish">
+        </activity>
     </application>
 
 </manifest>

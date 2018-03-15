@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.market.secondhandmarket"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -41,5 +41,9 @@ dependencies {
     implementation 'com.qmuiteam:qmui:1.0.6'
     //bmob
     implementation 'cn.bmob.android:bmob-sdk:3.5.5'
+    //cardView
     implementation 'com.android.support:cardview-v7:28.0.0-alpha1'
+    //floatingactionbutton
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
+
 }
