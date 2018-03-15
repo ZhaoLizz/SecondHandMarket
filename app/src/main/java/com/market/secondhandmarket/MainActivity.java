@@ -1,5 +1,6 @@
 package com.market.secondhandmarket;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.publish_sale:
-
+                startActivity(new Intent(this, PublishActivity.class));
                 break;
             case R.id.publish_tobuy:
 

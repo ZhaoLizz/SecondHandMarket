@@ -46,4 +46,8 @@ dependencies {
     //floatingactionbutton
     implementation 'com.getbase:floatingactionbutton:1.10.1'
 
+    //camera
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.0'
+
+
 }
