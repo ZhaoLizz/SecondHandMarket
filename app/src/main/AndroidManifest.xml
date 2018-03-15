@@ -36,12 +36,13 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_test">
+            android:label="Main">
         </activity>
         <activity
             android:name=".RegisterActivity"
-            android:label="@string/title_activity_register">
+            android:label="Register">
         </activity>
+
     </application>
 
 </manifest>
