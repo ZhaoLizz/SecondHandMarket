@@ -1,11 +1,12 @@
 package com.market.secondhandmarket;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.blankj.utilcode.util.Utils;
 import com.orhanobut.logger.AndroidLogAdapter;
@@ -41,15 +42,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        Log.d("Main", "onCreate: main");
+        ButterKnife.bind(this);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        startActivity(new Intent(this, LoginActivity.class));
+//        startActivity(new Intent(this, LoginActivity.class));
     }
 
-    private void init() {
-        Logger.addLogAdapter(new AndroidLogAdapter());        //Logger初始化
-        Utils.init(getApplication());   //AndroidUtilCode初始化
-        ButterKnife.bind(this);
-        Bmob.initialize(this, "fa6a000d3be3cc1df84347338bb012b4");
-    }
+
 
 }
