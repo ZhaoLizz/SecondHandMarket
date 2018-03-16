@@ -19,12 +19,22 @@
         android:inputType="text"
         android:textSize="15dp"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:paddingHorizontal="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="1dp"
+        android:background="#c4c4c4"/>
+
     <EditText
         android:id="@+id/pb_content"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:background="@null"
+        android:gravity="top"
         android:hint="描述一下宝贝的细节或故事"
         android:textSize="15dp"/>
 
@@ -35,32 +45,35 @@
 
         <ImageView
             android:id="@+id/img_1"
-            android:src="@mipmap/add_icon"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="3dp"/>
+            android:layout_margin="3dp"
+            android:background="#dedede"
+            android:src="@mipmap/add_icon"/>
 
         <ImageView
-            android:src="@mipmap/add_icon"
             android:id="@+id/img_2"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="3dp"/>
+            android:layout_margin="3dp"
+            android:background="#dedede"
+            android:src="@mipmap/add_icon"/>
 
         <ImageView
-            android:src="@mipmap/add_icon"
             android:id="@+id/img_3"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="3dp"/>
+            android:layout_margin="3dp"
+            android:background="#dedede"
+            android:src="@mipmap/add_icon"/>
 
         <ImageView
-            android:src="@mipmap/add_icon"
             android:id="@+id/img_4"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="3dp"/>
-
+            android:layout_margin="3dp"
+            android:background="#dedede"
+            android:src="@mipmap/add_icon"/>
 
 
     </LinearLayout>

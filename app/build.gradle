@@ -46,8 +46,8 @@ dependencies {
     //floatingactionbutton
     implementation 'com.getbase:floatingactionbutton:1.10.1'
 
-    //camera
-    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.0'
+    //图片选择器
+    compile 'com.zhihu.android:matisse:0.4.3'
 
 
 }
