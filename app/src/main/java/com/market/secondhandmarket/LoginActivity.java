@@ -20,12 +20,13 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.Utils;
 import com.market.secondhandmarket.bean.User;
-import com.market.secondhandmarket.constant.UserConstant;
+import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
 import butterknife.ButterKnife;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 
@@ -43,14 +44,21 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d("main", "onCreate: ");
 
+        //应用初始化
         Logger.addLogAdapter(new AndroidLogAdapter());        //Logger初始化
         Utils.init(getApplication());   //AndroidUtilCode初始化1
         Bmob.initialize(this, "fa6a000d3be3cc1df84347338bb012b4");
-
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         initView();
         setListener();
+
+        //判断是否登录
+        if (BmobUser.getCurrentUser(User.class) != null) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void initView() {
@@ -78,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (account.length() == 0 || password.length() == 0) {
                     Toast.makeText(LoginActivity.this, "用户名或密码不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    User user = new User(UserConstant.ID_USER);
+                    User user = new User(DbConstant.ID_USER);
                     user.setUsername(account);
                     user.setPassword(password);
                     user.login(new SaveListener<User>() {

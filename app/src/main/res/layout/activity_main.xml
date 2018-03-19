@@ -7,6 +7,25 @@
                 android:layout_height="match_parent"
                 tools:context="com.market.secondhandmarket.MainActivity">
 
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/QMUI.TopBar"
+        app:title="主页"/>
+
+
+    <FrameLayout
+        android:id="@+id/fragment_coninter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/navigation"
+        android:layout_below="@+id/toolbar">
+    </FrameLayout>
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
@@ -15,6 +34,9 @@
         android:layout_alignParentStart="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation"/>
+
+
+    <!--app:itemIconTint="@android:color/holo_blue_light"-->
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/floatingActionsMenu"

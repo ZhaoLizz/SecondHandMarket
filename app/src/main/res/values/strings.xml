@@ -9,5 +9,7 @@
     <string name="repeat_password">重复输入密码</string>
     <string name="next">完成</string>
     <string name="register">注册</string>
-    <string name="title_activity_publish">PublishActivity</string>
+    <string name="title_activity_publish">发布出售信息</string>
+    <string name="title_activity_user_sell">UserSellActivity</string>
+    <string name="title_activity_change_item">ChangeItemActivity</string>
 </resources>

@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.market.secondhandmarket.bean.User;
-import com.market.secondhandmarket.constant.UserConstant;
+import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
@@ -149,7 +149,7 @@ public class RegisterActivity extends AppCompatActivity {
         } else if (!password.equals(passRepeat)) {
             Toast.makeText(this, "两次输入密码不一致！", Toast.LENGTH_SHORT).show();
         } else {
-            User user = new User(UserConstant.ID_USER);
+            User user = new User(DbConstant.ID_USER);
             user.setUsername(username);
             user.setPassword(password);
             user.signUp(new SaveListener<User>() {

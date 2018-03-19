@@ -4,13 +4,13 @@
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="列表"/>
+        android:title="出售物品"/>
 
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
         android:visible="false"
-        android:title="首页"/>
+        android:title="求购物品"/>
 
     <item
         android:id="@+id/navigation_notifications"
