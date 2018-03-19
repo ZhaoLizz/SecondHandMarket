@@ -24,10 +24,14 @@ import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 
 public class LoginActivity extends AppCompatActivity {
@@ -86,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (account.length() == 0 || password.length() == 0) {
                     Toast.makeText(LoginActivity.this, "用户名或密码不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    User user = new User(DbConstant.ID_USER);
+                    User user = new User();
                     user.setUsername(account);
                     user.setPassword(password);
                     user.login(new SaveListener<User>() {
@@ -137,4 +141,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         fab.setVisibility(View.VISIBLE);
     }
+
+
 }

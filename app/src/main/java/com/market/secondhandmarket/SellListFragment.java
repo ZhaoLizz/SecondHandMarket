@@ -50,6 +50,7 @@ public class SellListFragment extends Fragment {
 
     private List<Item> mItemList = new ArrayList<>();
     private SellAdapter mSellAdapter;
+    private DeleteDialogFragment mDialogFragment;
 
     @Nullable
     @Override
@@ -78,6 +79,17 @@ public class SellListFragment extends Fragment {
         if (getArguments() != null) {
             isUserOnly = (Boolean) getArguments().get("isUserOnly");
         }
+
+        /**
+         * 会话监听
+         */
+        mDialogFragment = new DeleteDialogFragment();
+        mDialogFragment.setOnDeleteItemListener(new DeleteDialogFragment.OnDeleteItemListener() {
+            @Override
+            public void onDeleteItem() {
+                fetchItem();
+            }
+        });
 
         mSellAdapter = new SellAdapter(mItemList, getActivity());
         mSellAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
@@ -200,22 +212,10 @@ public class SellListFragment extends Fragment {
                 @Override
                 public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
                     Logger.d("long click ");
+
                     new DeleteDialogFragment().show(getActivity().getSupportFragmentManager(), "1");
                     /*Item item = mItemList.get(position);
-                    if (item != null) {
-                        item.delete(new UpdateListener() {
-                            @Override
-                            public void done(BmobException e) {
-                                if (e == null) {
-                                    Toast.makeText(getContext(), "成功删除数据!", Toast.LENGTH_SHORT).show();
-                                    mItemList.remove(position);
-                                    mSellAdapter.notifyDataSetChanged();
-                                } else {
-                                    Logger.e(e.getMessage());
-                                }
-                            }
-                        });
-                    }*/
+                    */
                     return true;
                 }
             });

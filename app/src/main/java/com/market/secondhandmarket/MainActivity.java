@@ -13,13 +13,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.blankj.utilcode.util.KeyboardUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.market.secondhandmarket.bean.User;
+import com.market.secondhandmarket.constant.DbConstant;
 import com.market.secondhandmarket.constant.UIConstant;
+import com.orhanobut.logger.Logger;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.navigation)
@@ -39,15 +51,19 @@ public class MainActivity extends AppCompatActivity {
     private String fragmentTAG = UIConstant.TAG_SELL;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
-
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        Toast.makeText(this, "正在加载数据", Toast.LENGTH_SHORT).show();
+        verifyIsManager();
+    }
+
+    private void initFragment() {
         mSellFragment = SellListFragment.newInstance();
         mBuyListFragment = BuyListFragment.newInstance();
         mUserFragment = UserFragment.newInstance();
@@ -81,9 +97,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Bmob.initialize(this, "fa6a000d3be3cc1df84347338bb012b4");
+    }
 
     /**
      * 悬浮按钮点击事件
+     *
      * @param view
      */
     @OnClick({R.id.publish_sale, R.id.publish_tobuy})
@@ -102,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 搜索栏点击事件
+     *
      * @param menu
      * @return
      */
@@ -109,13 +132,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search_view, menu);
         //找到searchView
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint("搜索物品关键字");
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
+                KeyboardUtils.hideSoftInput(MainActivity.this);
+                searchView.clearFocus();
                 switch (fragmentTAG) {
                     case UIConstant.TAG_SELL:
                         mSellFragment.fetchItem();
@@ -191,4 +216,26 @@ public class MainActivity extends AppCompatActivity {
         }
         transaction.show(mFragments[index]).commit();
     }
+
+    public void verifyIsManager() {
+        User curUser = BmobUser.getCurrentUser(User.class);
+        if (curUser != null) {
+            BmobQuery<User> query = new BmobQuery<>();
+            query.addWhereEqualTo("objectId", curUser.getObjectId());
+            query.findObjects(new FindListener<User>() {
+                @Override
+                public void done(List<User> list, BmobException e) {
+                    if (list.size() > 0) {
+                        DbConstant.isManager = list.get(0).isManager();
+                        Logger.d(DbConstant.isManager);
+                        Toast.makeText(MainActivity.this, "管理员账户验证通过！", Toast.LENGTH_SHORT).show();
+                        initFragment();
+                    } else {
+                        initFragment();
+                    }
+                }
+            });
+        }
+    }
+
 }

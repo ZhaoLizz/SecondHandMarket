@@ -15,10 +15,14 @@ import butterknife.OnClick;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadBatchListener;
 
 import static com.market.secondhandmarket.constant.RequestConstant.REQUEST_CODE_CHOOSE;
 
+/**
+ * 更新出售物品信息
+ */
 public class ChangeItemActivity extends PublishActivity {
     private Item item;
 
@@ -89,11 +93,11 @@ public class ChangeItemActivity extends PublishActivity {
                         }
                     });
                 } else {    //没有选择图片
-                    item.save(new SaveListener<String>() {
+                    item.update(new UpdateListener() {
                         @Override
-                        public void done(String s, BmobException e) {
+                        public void done(BmobException e) {
                             if (e == null) {
-                                Toast.makeText(ChangeItemActivity.this, "成功发布宝贝信息！", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ChangeItemActivity.this, "成功更新宝贝信息！", Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
                                 Logger.e(e.getMessage() + " " + e.getErrorCode());

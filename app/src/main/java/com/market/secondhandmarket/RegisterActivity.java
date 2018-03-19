@@ -149,7 +149,7 @@ public class RegisterActivity extends AppCompatActivity {
         } else if (!password.equals(passRepeat)) {
             Toast.makeText(this, "两次输入密码不一致！", Toast.LENGTH_SHORT).show();
         } else {
-            User user = new User(DbConstant.ID_USER);
+            User user = new User();
             user.setUsername(username);
             user.setPassword(password);
             user.signUp(new SaveListener<User>() {

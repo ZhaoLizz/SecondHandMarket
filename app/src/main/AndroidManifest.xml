@@ -78,6 +78,10 @@
             android:name=".ChangeBuyActivity"
             android:label="@string/title_activity_user_buy">
         </activity>
+        <activity
+            android:name=".ChangeUserActivity"
+            android:label="@string/title_activity_change_user">
+        </activity>
     </application>
 
 </manifest>

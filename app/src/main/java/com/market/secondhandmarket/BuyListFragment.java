@@ -162,12 +162,12 @@ public class BuyListFragment extends Fragment {
                 mToBuyItemList.clear();
                 mToBuyItemList.addAll(list);
                 mToBuyAdapter.notifyDataSetChanged();
+                mRefershLayout.setRefreshing(false);
             }
         });
     }
 
     public void fetchDateByState(boolean isUserOnly) {
-        Logger.d("fetchDateByState " + isUserOnly);
         if (isUserOnly) {
             fetchUserItem();
         } else {

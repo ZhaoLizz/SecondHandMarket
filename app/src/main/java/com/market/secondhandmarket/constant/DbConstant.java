@@ -9,4 +9,5 @@ public class DbConstant {
     public static final String ID_MANAGER = "id_manager";
     public static final String ITEM_SELL = "item_sell";
     public static final String ITEM_BUY = "item_buy";
+    public static boolean isManager = false;
 }

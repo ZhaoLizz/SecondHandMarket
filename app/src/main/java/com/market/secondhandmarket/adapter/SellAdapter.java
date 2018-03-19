@@ -16,7 +16,7 @@ import java.util.List;
  * Created by qinba on 2018/3/17.
  */
 
-public class SellAdapter extends BaseItemDraggableAdapter<Item, BaseViewHolder> {
+public class SellAdapter extends BaseQuickAdapter<Item, BaseViewHolder> {
 
     private Context mContext;
     private RecyclerView childRecyclerView;

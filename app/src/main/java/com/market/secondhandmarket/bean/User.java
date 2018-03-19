@@ -8,9 +8,18 @@ import cn.bmob.v3.BmobUser;
 
 public class User extends BmobUser {
     private String identity;
+    private boolean isManager;
 
-    public User(String identity) {
-        this.identity = identity;
+    public User() {
+        isManager = false;
+    }
+
+    public boolean isManager() {
+        return isManager;
+    }
+
+    public void setManager(boolean manager) {
+        isManager = manager;
     }
 
     public String getIdentity() {
