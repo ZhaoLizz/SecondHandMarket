@@ -1,11 +1,12 @@
 package com.market.secondhandmarket;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,10 +15,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.market.secondhandmarket.adapter.SellAdapter;
 import com.market.secondhandmarket.bean.Item;
 import com.market.secondhandmarket.bean.User;
+import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -66,6 +67,10 @@ public class SellListFragment extends Fragment {
             fetchItem();
         } else {
             fetchUserItem();
+        }
+
+        if (DbConstant.isManager) {
+            setOnAdapterLongClick(DbConstant.isManager);
         }
     }
 
@@ -188,40 +193,30 @@ public class SellListFragment extends Fragment {
         });
     }
 
-    public void setOnAdapterSwipable(boolean isSwipable) {
+    public void setOnAdapterLongClick(boolean isSwipable) {
         if (isSwipable) {
-            mSellAdapter.enableSwipeItem();
-            mSellAdapter.setOnItemSwipeListener(new OnItemSwipeListener() {
+            Logger.d(isSwipable);
+            mSellAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
                 @Override
-                public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
-
-                }
-
-                @Override
-                public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
-                    Item item = mItemList.get(pos);
+                public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
+                    Logger.d("long click ");
+                    new DeleteDialogFragment().show(getActivity().getSupportFragmentManager(), "1");
+                    /*Item item = mItemList.get(position);
                     if (item != null) {
                         item.delete(new UpdateListener() {
                             @Override
                             public void done(BmobException e) {
                                 if (e == null) {
                                     Toast.makeText(getContext(), "成功删除数据!", Toast.LENGTH_SHORT).show();
+                                    mItemList.remove(position);
+                                    mSellAdapter.notifyDataSetChanged();
                                 } else {
                                     Logger.e(e.getMessage());
                                 }
                             }
                         });
-                    }
-                }
-
-                @Override
-                public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-
-                }
-
-                @Override
-                public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
-
+                    }*/
+                    return true;
                 }
             });
         }
