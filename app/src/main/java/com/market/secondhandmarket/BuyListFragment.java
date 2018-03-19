@@ -59,15 +59,11 @@ public class BuyListFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        fetchDateByState(isUserOnly);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        fetchDateByState(isUserOnly);
+        if (!isUserOnly) {
+            fetchItem();
+        }
     }
 
     private void init() {
@@ -92,7 +88,9 @@ public class BuyListFragment extends Fragment {
                 @Override
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                     ToBuyItem toBuyItem = (ToBuyItem) adapter.getData().get(position);
-//                    Intent intent = new Intent(getActivity(),)
+                    Intent intent = new Intent(getActivity(), ChangeBuyActivity.class);
+                    intent.putExtra("tobuyitem", toBuyItem);
+                    startActivity(intent);
                 }
             });
         }
@@ -160,6 +158,7 @@ public class BuyListFragment extends Fragment {
         query.findObjects(new FindListener<ToBuyItem>() {
             @Override
             public void done(List<ToBuyItem> list, BmobException e) {
+                Logger.d(list.size());
                 mToBuyItemList.clear();
                 mToBuyItemList.addAll(list);
                 mToBuyAdapter.notifyDataSetChanged();
@@ -168,6 +167,7 @@ public class BuyListFragment extends Fragment {
     }
 
     public void fetchDateByState(boolean isUserOnly) {
+        Logger.d("fetchDateByState " + isUserOnly);
         if (isUserOnly) {
             fetchUserItem();
         } else {

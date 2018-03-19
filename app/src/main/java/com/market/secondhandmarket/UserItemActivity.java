@@ -3,9 +3,14 @@ package com.market.secondhandmarket;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.orhanobut.logger.Logger;
+
 import butterknife.ButterKnife;
 
-public class UserSellActivity extends FragmentActivity {
+/**
+ * 显示用户物品界面
+ */
+public class UserItemActivity extends FragmentActivity {
     private SellListFragment mSellListFragment;
     private BuyListFragment mBuyListFragment;
 
@@ -26,12 +31,6 @@ public class UserSellActivity extends FragmentActivity {
         mBuyListFragment = BuyListFragment.newInstance();
         mBuyListFragment.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_full_container, mSellListFragment)
-                .add(R.id.fragment_full_container, mBuyListFragment)
-                .show(mSellListFragment)
-                .commit();
-
         switch (activityCategory) {
             case "sell":
                 getSupportFragmentManager().beginTransaction()
@@ -42,10 +41,9 @@ public class UserSellActivity extends FragmentActivity {
             case "buy":
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_full_container, mBuyListFragment)
-                        .show(mSellListFragment)
+                        .show(mBuyListFragment)
                         .commit();
                 break;
         }
     }
-
 }

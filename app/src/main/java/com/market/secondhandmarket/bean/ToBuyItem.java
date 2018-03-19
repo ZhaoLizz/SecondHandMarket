@@ -1,12 +1,14 @@
 package com.market.secondhandmarket.bean;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobObject;
 
 /**
  * Created by qinba on 2018/3/17.
  */
 
-public class ToBuyItem extends BmobObject {
+public class ToBuyItem extends BmobObject implements Serializable {
     private String title;
     private User mUser;
     private String phone;

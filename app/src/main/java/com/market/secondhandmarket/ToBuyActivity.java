@@ -61,6 +61,5 @@ public class ToBuyActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "请先登录!", Toast.LENGTH_SHORT).show();
         }
-
     }
 }

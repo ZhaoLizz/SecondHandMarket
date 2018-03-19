@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
     android:layout_height="match_parent"
     tools:context="com.market.secondhandmarket.ToBuyActivity">
 
@@ -14,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/tobuy_name"
             android:layout_width="200dp"
             android:layout_height="60dp"
@@ -23,6 +25,9 @@
             android:hint="想买的宝贝"
             android:textColor="@android:color/black"
             android:textSize="15sp"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelAnimating="true"
+            app:met_floatingLabelText="宝贝名称"
             />
 
     </android.support.v7.widget.CardView>
@@ -35,16 +40,18 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp">
 
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/tobuy_price"
-            android:layout_width="200dp"
+            android:layout_width="210dp"
             android:layout_height="60dp"
             android:layout_alignEnd="@+id/cardView3"
             android:layout_alignTop="@+id/cardView"
             android:gravity="center"
             android:hint="预期价格"
             android:textColor="@android:color/black"
-            android:textSize="15sp"/>
+            android:textSize="15sp"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelAnimating="true"/>
 
     </android.support.v7.widget.CardView>
 
@@ -56,14 +63,16 @@
         android:layout_below="@+id/cardView"
         android:layout_marginTop="10dp">
 
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/tobuy_phone"
             android:layout_width="213dp"
             android:layout_height="60dp"
             android:gravity="center"
             android:hint="电话号码"
             android:textColor="@android:color/black"
-            android:textSize="15sp"/>
+            android:textSize="15sp"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelAnimating="true"/>
 
     </android.support.v7.widget.CardView>
 
@@ -75,14 +84,16 @@
         android:layout_below="@+id/cardView3"
         android:layout_marginTop="10dp">
 
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/tobuy_content"
             android:layout_width="213dp"
             android:layout_height="60dp"
             android:gravity="center"
             android:hint="物品描述"
             android:textColor="@android:color/black"
-            android:textSize="15sp"/>
+            android:textSize="15sp"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelAnimating="true"/>
 
     </android.support.v7.widget.CardView>
 
@@ -99,4 +110,4 @@
         android:textSize="15sp"/>
 
 
-</RelativeLayout>
+</LinearLayout>

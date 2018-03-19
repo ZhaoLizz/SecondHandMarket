@@ -67,7 +67,7 @@
             android:label="发布求购信息">
         </activity>
         <activity
-            android:name=".UserSellActivity"
+            android:name=".UserItemActivity"
             android:label="@string/title_activity_user_sell">
         </activity>
         <activity

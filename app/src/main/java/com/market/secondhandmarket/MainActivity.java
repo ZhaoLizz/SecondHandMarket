@@ -67,13 +67,16 @@ public class MainActivity extends AppCompatActivity {
         mUserFragment.setOnUserViewClickListener(new UserFragment.OnUserViewClickListener() {
             @Override
             public void onUserSellClick() {
-                Intent intent = new Intent(MainActivity.this, UserSellActivity.class);
+                Intent intent = new Intent(MainActivity.this, UserItemActivity.class);
                 intent.putExtra("activity_category", "sell");
                 startActivity(intent);
             }
 
             @Override
             public void onUserBuyClick() {
+                Intent intent = new Intent(MainActivity.this, UserItemActivity.class);
+                intent.putExtra("activity_category", "buy");
+                startActivity(intent);
             }
         });
     }
