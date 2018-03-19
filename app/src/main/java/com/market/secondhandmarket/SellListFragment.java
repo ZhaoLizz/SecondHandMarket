@@ -1,5 +1,6 @@
 package com.market.secondhandmarket;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,6 +45,7 @@ public class SellListFragment extends Fragment {
     Unbinder unbinder;
     @BindView(R.id.refersh_layout)
     SwipeRefreshLayout mRefershLayout;
+    private boolean isUserOnly = false;
 
     private List<Item> mItemList = new ArrayList<>();
     private SellAdapter mSellAdapter;
@@ -54,20 +56,30 @@ public class SellListFragment extends Fragment {
         View view = inflater.inflate(R.layout.recycler_view, container, false);
         unbinder = ButterKnife.bind(this, view);
         init();
-        fetchItem();
-
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        fetchItem();
+        if (!isUserOnly) {
+            fetchItem();
+        } else {
+            fetchUserItem();
+        }
     }
 
     private void init() {
+        if (getArguments() != null) {
+            isUserOnly = (Boolean) getArguments().get("isUserOnly");
+        }
+
         mSellAdapter = new SellAdapter(mItemList, getActivity());
         mSellAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
+        if (isUserOnly) {
+            setOnAdapterClickListener();
+        }
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -77,9 +89,19 @@ public class SellListFragment extends Fragment {
         mRefershLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                fetchItem();
+                if (!isUserOnly) {
+                    fetchItem();
+                } else {
+                    fetchUserItem();
+                }
             }
         });
+
+        if (!isUserOnly) {
+            fetchItem();
+        } else {
+            fetchUserItem();
+        }
     }
 
     public static SellListFragment newInstance() {
@@ -140,7 +162,7 @@ public class SellListFragment extends Fragment {
     }
 
     public void fetchUserItem() {
-        User currentUser = BmobUser.getCurrentUser(User.class);
+        final User currentUser = BmobUser.getCurrentUser(User.class);
         BmobQuery<Item> query = new BmobQuery<>();
         query.addWhereEqualTo("mUser", currentUser);
         query.findObjects(new FindListener<Item>() {
@@ -148,13 +170,22 @@ public class SellListFragment extends Fragment {
             public void done(List<Item> list, BmobException e) {
                 mItemList.clear();
                 mItemList.addAll(list);
+                mRefershLayout.setRefreshing(false);
                 mSellAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    public void setOnAdapterClickListener(BaseQuickAdapter.OnItemClickListener listener) {
-        mSellAdapter.setOnItemClickListener(listener);
+    public void setOnAdapterClickListener() {
+        mSellAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                Item item = (Item) adapter.getData().get(position);
+                Intent intent = new Intent(getActivity(), ChangeItemActivity.class);
+                intent.putExtra("item", item);
+                startActivity(intent);
+            }
+        });
     }
 
     public void setOnAdapterSwipable(boolean isSwipable) {

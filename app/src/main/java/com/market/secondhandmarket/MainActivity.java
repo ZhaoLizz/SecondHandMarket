@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.market.secondhandmarket.constant.UIConstant;
-import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,15 +67,13 @@ public class MainActivity extends AppCompatActivity {
         mUserFragment.setOnUserViewClickListener(new UserFragment.OnUserViewClickListener() {
             @Override
             public void onUserSellClick() {
-//                mSellFragment.fetchUserItem();
-//                switchFragment(lastShowFragment, 0);
-                startActivity(new Intent(MainActivity.this, UserSellActivity.class));
+                Intent intent = new Intent(MainActivity.this, UserSellActivity.class);
+                intent.putExtra("activity_category", "sell");
+                startActivity(intent);
             }
 
             @Override
             public void onUserBuyClick() {
-//                mBuyListFragment.fetchUserItem();
-//                switchFragment(lastShowFragment, 1);
             }
         });
     }
@@ -91,10 +87,12 @@ public class MainActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.publish_sale:
-                startActivity(new Intent(this, PublishActivity.class));
+                Intent intent = new Intent(this, PublishActivity.class);
+                startActivity(intent);
                 break;
             case R.id.publish_tobuy:
-                startActivity(new Intent(this, ToBuyActivity.class));
+                Intent intent2 = new Intent(this, ToBuyActivity.class);
+                startActivity(intent2);
                 break;
         }
     }

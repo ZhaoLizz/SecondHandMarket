@@ -12,4 +12,5 @@
     <string name="title_activity_publish">发布出售信息</string>
     <string name="title_activity_user_sell">UserSellActivity</string>
     <string name="title_activity_change_item">ChangeItemActivity</string>
+    <string name="title_activity_user_buy">UserBuyActivity</string>
 </resources>

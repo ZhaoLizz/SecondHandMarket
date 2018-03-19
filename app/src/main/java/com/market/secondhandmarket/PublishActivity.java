@@ -136,40 +136,54 @@ public class PublishActivity extends Activity {
                         final String path = getRealFilePath(uri);
                         filePaths[i] = path;
                     }
-                    BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
-                        @Override
-                        public void onSuccess(List<BmobFile> list, List<String> urls) {
-                            Logger.d("图片上传onSuccess: \n" + urls.size());
-                            //全部上传完成
-                            if (urls.size() == filePaths.length) {
-                                item.setUrls(urls);
-                                item.save(new SaveListener<String>() {
-                                    @Override
-                                    public void done(String s, BmobException e) {
-                                        if (e == null) {
-                                            Toast.makeText(PublishActivity.this, "成功发布宝贝信息！", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        } else {
-                                            Logger.e(e.getMessage() + " " + e.getErrorCode());
+
+                    if (filePaths.length != 0) {
+                        BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
+                            @Override
+                            public void onSuccess(List<BmobFile> list, List<String> urls) {
+                                Logger.d("图片上传onSuccess: \n" + urls.size());
+                                //全部上传完成
+                                if (urls.size() == filePaths.length) {
+                                    item.setUrls(urls);
+                                    item.save(new SaveListener<String>() {
+                                        @Override
+                                        public void done(String s, BmobException e) {
+                                            if (e == null) {
+                                                Toast.makeText(PublishActivity.this, "成功发布宝贝信息！", Toast.LENGTH_SHORT).show();
+                                                finish();
+                                            } else {
+                                                Logger.e(e.getMessage() + " " + e.getErrorCode());
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
-                        }
+                            @Override
+                            public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+                                //1、curIndex--表示当前第几个文件正在上传
+                                //2、curPercent--表示当前上传文件的进度值（百分比）
+                                //3、total--表示总的上传文件数
+                                //4、totalPercent--表示总的上传进度（百分比）
+                            }
 
-                        @Override
-                        public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
-                            //1、curIndex--表示当前第几个文件正在上传
-                            //2、curPercent--表示当前上传文件的进度值（百分比）
-                            //3、total--表示总的上传文件数
-                            //4、totalPercent--表示总的上传进度（百分比）
-                        }
+                            @Override
+                            public void onError(int i, String s) {
 
-                        @Override
-                        public void onError(int i, String s) {
-
-                        }
-                    });
+                            }
+                        });
+                    } else {    //没有选择图片
+                        item.save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                if (e == null) {
+                                    Toast.makeText(PublishActivity.this, "成功发布宝贝信息！", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                } else {
+                                    Logger.e(e.getMessage() + " " + e.getErrorCode());
+                                }
+                            }
+                        });
+                    }
                 } else {
                     Toast.makeText(this, "请先登录!", Toast.LENGTH_SHORT).show();
                 }
