@@ -31,6 +31,7 @@ public class ChangeItemActivity extends PublishActivity {
         super.onCreate(savedInstanceState);
         item = (Item) getIntent().getSerializableExtra("item");
 
+
         mPublishBtn.setText("更新");
         mPbTitle.setText(item.getTitle());
         mPbContent.setText(item.getContent());

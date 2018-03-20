@@ -12,6 +12,8 @@ import com.market.secondhandmarket.bean.Item;
 import com.market.secondhandmarket.bean.ToBuyItem;
 import com.orhanobut.logger.Logger;
 
+import java.util.Arrays;
+
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 
@@ -20,38 +22,25 @@ import cn.bmob.v3.listener.UpdateListener;
  */
 
 public class DeleteDialogFragment extends DialogFragment {
-    private Item mItem;
-    private ToBuyItem mToBuyItem;
+    private int position;
     private OnDeleteItemListener mDeleteItemListener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String[] items = new String[]{"警告该用户?", "封禁该用户?","通知所有用户?"};
-        boolean[] checked = new boolean[]{false, false, false};
+        String[] items = new String[]{"警告该用户?", "封禁该用户?", "通知所有用户?"};
+        final boolean[] checked = new boolean[]{false, false, false};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("确定删除该条数据?")
                 .setMultiChoiceItems(items, checked, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        Logger.d(which + "  " + isChecked);
                     }
                 })
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (mItem != null) {
-                            mItem.delete(new UpdateListener() {
-                                @Override
-                                public void done(BmobException e) {
-                                    if (e == null) {
-                                        Toast.makeText(getContext(), "成功删除数据!", Toast.LENGTH_SHORT).show();
-
-                                    } else {
-                                        Logger.e(e.getMessage());
-                                    }
-                                }
-                            });
-                        }
+                        Logger.d(which + "\n" + Arrays.toString(checked));
+                        mDeleteItemListener.onDeleteItem(position);
                     }
                 })
                 .setNegativeButton("取消", null)
@@ -59,18 +48,16 @@ public class DeleteDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    public void show(FragmentManager manager, Item item) {
-        mItem = item;
+    public void show(FragmentManager manager, int position) {
+        this.position = position;
         super.show(manager, "1");
     }
 
     interface OnDeleteItemListener {
-        void onDeleteItem();
+        void onDeleteItem(int position);
     }
 
     public void setOnDeleteItemListener(OnDeleteItemListener listener) {
         mDeleteItemListener = listener;
     }
-
-
 }

@@ -81,13 +81,24 @@ public class SellListFragment extends Fragment {
         }
 
         /**
-         * 会话监听
+         * 删除数据时的会话监听
          */
         mDialogFragment = new DeleteDialogFragment();
         mDialogFragment.setOnDeleteItemListener(new DeleteDialogFragment.OnDeleteItemListener() {
             @Override
-            public void onDeleteItem() {
-                fetchItem();
+            public void onDeleteItem(int position) {
+                Logger.d("ondeleteItem");
+                Item item = mItemList.remove(position);
+                item.delete(new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        if (e == null) {
+                            fetchItem();
+                        } else {
+                            Logger.e(e.getMessage());
+                        }
+                    }
+                });
             }
         });
 
@@ -205,17 +216,16 @@ public class SellListFragment extends Fragment {
         });
     }
 
+    /**
+     * 管理员登录情况下，出售列表里 长按弹出删除对话框
+     * @param isSwipable
+     */
     public void setOnAdapterLongClick(boolean isSwipable) {
         if (isSwipable) {
-            Logger.d(isSwipable);
             mSellAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
-                    Logger.d("long click ");
-
-                    new DeleteDialogFragment().show(getActivity().getSupportFragmentManager(), "1");
-                    /*Item item = mItemList.get(position);
-                    */
+                    mDialogFragment.show(getActivity().getSupportFragmentManager(),position);
                     return true;
                 }
             });

@@ -17,6 +17,7 @@ import com.market.secondhandmarket.adapter.ToBuyAdapter;
 import com.market.secondhandmarket.bean.Item;
 import com.market.secondhandmarket.bean.ToBuyItem;
 import com.market.secondhandmarket.bean.User;
+import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by a6100890 on 2018/3/18.
@@ -46,6 +48,7 @@ public class BuyListFragment extends Fragment {
 
     private List<ToBuyItem> mToBuyItemList = new ArrayList<>();
     private ToBuyAdapter mToBuyAdapter;
+    private DeleteDialogFragment mDialogFragment;
     private boolean isUserOnly = false;
 
 
@@ -63,6 +66,12 @@ public class BuyListFragment extends Fragment {
         super.onResume();
         if (!isUserOnly) {
             fetchItem();
+        } else {
+            fetchUserItem();
+        }
+
+        if (DbConstant.isManager) {
+            setOnAdapterLongClick();
         }
     }
 
@@ -70,6 +79,28 @@ public class BuyListFragment extends Fragment {
         if (getArguments() != null) {
             isUserOnly = (Boolean) getArguments().get("isUserOnly");
         }
+
+        /**
+         * 删除会话的监听
+         */
+        mDialogFragment = new DeleteDialogFragment();
+        mDialogFragment.setOnDeleteItemListener(new DeleteDialogFragment.OnDeleteItemListener() {
+            @Override
+            public void onDeleteItem(int position) {
+                Logger.d("buy: onDeleteItem");
+                ToBuyItem buyItem = mToBuyItemList.remove(position);
+                buyItem.delete(new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        if (e == null) {
+                            fetchItem();
+                        } else {
+                            Logger.e(e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
 
         mToBuyAdapter = new ToBuyAdapter(mToBuyItemList);
         mToBuyAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
@@ -173,5 +204,18 @@ public class BuyListFragment extends Fragment {
         } else {
             fetchItem();
         }
+    }
+
+    /**
+     * 只对管理员开放的长按点击事件
+     */
+    private void setOnAdapterLongClick() {
+        mToBuyAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                mDialogFragment.show(getActivity().getSupportFragmentManager(), position);
+                return true;
+            }
+        });
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.market.secondhandmarket.bean.User;
+import com.orhanobut.logger.Logger;
 import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -35,15 +36,21 @@ public class ChangeUserActivity extends Activity {
 
     @OnClick(R.id.set_btn)
     public void onViewClicked() {
-        User user = BmobUser.getCurrentUser(User.class);
+        User curuser = BmobUser.getCurrentUser(User.class);
+
+        User user = new User();
         user.setEmail(mSetEmil.getText().toString());
         user.setMobilePhoneNumber(mSetPhone.getText().toString());
         user.setIdentity(mSetNick.getText().toString());
-        user.update(new UpdateListener() {
+        user.update(curuser.getObjectId(), new UpdateListener() {
             @Override
             public void done(BmobException e) {
-                Toast.makeText(ChangeUserActivity.this, "更新用户信息成功！", Toast.LENGTH_SHORT).show();
-                finish();
+                if (e == null) {
+                    Toast.makeText(ChangeUserActivity.this, "更新用户信息成功！", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Logger.e(e.getMessage());
+                }
             }
         });
     }

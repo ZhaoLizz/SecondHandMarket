@@ -7,12 +7,8 @@ import cn.bmob.v3.BmobUser;
  */
 
 public class User extends BmobUser {
-    private String identity;
-    private boolean isManager;
-
-    public User() {
-        isManager = false;
-    }
+    private String identity;        //昵称
+    private boolean isManager = false;
 
     public boolean isManager() {
         return isManager;

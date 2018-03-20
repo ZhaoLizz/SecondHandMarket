@@ -1,11 +1,15 @@
 package com.market.secondhandmarket;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        initPremission();
         Toast.makeText(this, "正在加载数据", Toast.LENGTH_SHORT).show();
         verifyIsManager();
     }
@@ -101,6 +106,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Bmob.initialize(this, "fa6a000d3be3cc1df84347338bb012b4");
+    }
+
+    private void initPremission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            Toast.makeText(this, "权限申请被拒绝", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     /**
@@ -227,8 +247,6 @@ public class MainActivity extends AppCompatActivity {
                 public void done(List<User> list, BmobException e) {
                     if (list.size() > 0) {
                         DbConstant.isManager = list.get(0).isManager();
-                        Logger.d(DbConstant.isManager);
-                        Toast.makeText(MainActivity.this, "管理员账户验证通过！", Toast.LENGTH_SHORT).show();
                         initFragment();
                     } else {
                         initFragment();

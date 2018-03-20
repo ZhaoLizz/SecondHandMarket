@@ -60,9 +60,8 @@ public class PublishActivity extends Activity {
     @BindView(R.id.publish_phone)
     MaterialEditText mPublishPhone;
 
-
     protected List<Uri> mSelectPhoto = new ArrayList<>();
-    private SelectedPhotoAdapter mPhotoAdapter;
+    protected SelectedPhotoAdapter mPhotoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,8 @@ public class PublishActivity extends Activity {
             @Override
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
                 Logger.d("long click: " + position);
+                adapter.getData().remove(position);
+                adapter.notifyDataSetChanged();
                 return true;
             }
         });
@@ -131,6 +132,7 @@ public class PublishActivity extends Activity {
                     item.setPhone(mPublishPhone.getText().toString());
 
                     final String[] filePaths = new String[mSelectPhoto.size()];
+
                     for (int i = 0; i < mSelectPhoto.size(); i++) {
                         Uri uri = mSelectPhoto.get(i);
                         final String path = getRealFilePath(uri);
@@ -160,6 +162,7 @@ public class PublishActivity extends Activity {
                             }
                             @Override
                             public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+                                Logger.d("curIndex: %d  ,curPercent %d  ,total  %d  ,totalPercent  %d", curIndex, curPercent, total, totalPercent);
                                 //1、curIndex--表示当前第几个文件正在上传
                                 //2、curPercent--表示当前上传文件的进度值（百分比）
                                 //3、total--表示总的上传文件数
@@ -168,7 +171,7 @@ public class PublishActivity extends Activity {
 
                             @Override
                             public void onError(int i, String s) {
-
+                                Logger.e(s);
                             }
                         });
                     } else {    //没有选择图片
@@ -226,7 +229,7 @@ public class PublishActivity extends Activity {
         for (int i = 0; i < uriPaths.size(); i++) {
             if (uriPaths.get(i).equals(coverStr)) {
                 for (int j = i + 1; j < uriPaths.size(); j++) {
-                    sdCardPath = File.separator + uriPaths.get(j);
+                    sdCardPath += File.separator + uriPaths.get(j);
                 }
                 break;
             }
