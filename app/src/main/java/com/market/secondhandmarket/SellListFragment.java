@@ -27,10 +27,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobBatch;
+import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BatchResult;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.QueryListListener;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 /**
@@ -86,10 +92,62 @@ public class SellListFragment extends Fragment {
         mDialogFragment = new DeleteDialogFragment();
         mDialogFragment.setOnDeleteItemListener(new DeleteDialogFragment.OnDeleteItemListener() {
             @Override
-            public void onDeleteItem(int position) {
-                Logger.d("ondeleteItem");
-                Item item = mItemList.remove(position);
-                item.delete(new UpdateListener() {
+            public void onDeleteItem(int position, final boolean isWarn, final boolean isBan, final boolean isNoteAll) {
+                final Item item = mItemList.remove(position);
+                //处理警告，封禁
+                if (isBan) {
+                    //在当前管理员User的banUserList字段添加被封禁用户的objectId
+                    User curUser = BmobUser.getCurrentUser(User.class);
+                    List<String> banUserList;
+                    if (curUser.getBanUserList() != null) {
+                        Logger.d(curUser.getBanUserList().size());
+                        banUserList = curUser.getBanUserList();
+                    } else {
+                        banUserList = new ArrayList<>();
+                    }
+                    banUserList.add(item.getUser().getObjectId());
+
+                    User newUser = new User();
+                    newUser.setManager(true);
+                    newUser.setBanUserList(banUserList);
+                    newUser.update(curUser.getObjectId(), new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                Logger.d("done");
+                            } else {
+                                Logger.e(e.getMessage());
+                            }
+                        }
+                    });
+                } else if (isWarn) {
+                    //在当前管理员User的banUserList字段添加被封禁用户的objectId
+                    User curUser = BmobUser.getCurrentUser(User.class);
+                    List<String> warnUserList;
+                    if (curUser.getBanUserList() != null) {
+                        Logger.d(curUser.getBanUserList().size());
+                        warnUserList = curUser.getBanUserList();
+                    } else {
+                        warnUserList = new ArrayList<>();
+                    }
+                    warnUserList.add(item.getUser().getObjectId());
+
+                    User newUser = new User();
+                    newUser.setManager(true);
+                    newUser.setWarnUserList(warnUserList);
+                    newUser.update(curUser.getObjectId(), new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                Logger.d("done");
+                            } else {
+                                Logger.e(e.getMessage());
+                            }
+                        }
+                    });
+                }
+                //删除数据
+                /*item.delete(new UpdateListener() {
                     @Override
                     public void done(BmobException e) {
                         if (e == null) {
@@ -98,7 +156,7 @@ public class SellListFragment extends Fragment {
                             Logger.e(e.getMessage());
                         }
                     }
-                });
+                });*/
             }
         });
 
@@ -166,6 +224,7 @@ public class SellListFragment extends Fragment {
 
 
     public void searchItem(final String searchStr) {
+        Logger.d("searchItem");
         BmobQuery<Item> query = new BmobQuery<>();
         query.findObjects(new FindListener<Item>() {
             @Override
@@ -179,7 +238,7 @@ public class SellListFragment extends Fragment {
                             }
                         }
                         mItemList.clear();
-                        mItemList.addAll(list);
+                        mItemList.addAll(resultList);
                         mSellAdapter.notifyDataSetChanged();
                     }
                 } else {
@@ -218,6 +277,7 @@ public class SellListFragment extends Fragment {
 
     /**
      * 管理员登录情况下，出售列表里 长按弹出删除对话框
+     *
      * @param isSwipable
      */
     public void setOnAdapterLongClick(boolean isSwipable) {
@@ -225,11 +285,40 @@ public class SellListFragment extends Fragment {
             mSellAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
-                    mDialogFragment.show(getActivity().getSupportFragmentManager(),position);
+                    mDialogFragment.show(getActivity().getSupportFragmentManager(), position);
                     return true;
                 }
             });
         }
+    }
+
+    private void noteAllUser(final String noteMessage) {
+        BmobQuery<User> queryUser = new BmobQuery<>();
+        final List<BmobObject> bmobObjectList = new ArrayList<>();
+
+        queryUser.findObjects(new FindListener<User>() {
+            @Override
+            public void done(List<User> list, BmobException e) {
+                if (e == null) {
+                    Logger.d(list.size());
+                    for (User user : list) {
+//                        user.setNoteAllMessage(noteMessage);
+                        bmobObjectList.add(user);
+                    }
+                    new BmobBatch().updateBatch(bmobObjectList)
+                            .doBatch(new QueryListListener<BatchResult>() {
+                                @Override
+                                public void done(List<BatchResult> list, BmobException e) {
+                                    if (e == null) {
+                                        Logger.d(list.size());
+                                    } else {
+                                        Logger.e(e.getMessage());
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
 
 
