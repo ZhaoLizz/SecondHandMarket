@@ -23,5 +23,12 @@
         <item name="colorControlActivated">#FFCC00</item>
     </style>
 
+    <style name="MyQMUICompatNoActionBar" parent="QMUI.Compat.NoActionBar">
+        <item name="colorPrimary">#03A9F4</item>
+        <item name="colorPrimaryDark">#0288D1</item>
+        <item name="colorAccent">#2fa881</item>
+        <item name="android:textColorPrimary">#FFF</item>
+        <!--<item name="actionMenuTextColor">#FFF</item>-->
+    </style>
 
 </resources>

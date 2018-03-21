@@ -36,4 +36,6 @@ public class SelectedPhotoAdapter extends BaseQuickAdapter<Uri, BaseViewHolder> 
     protected void convert(BaseViewHolder helper, Uri item) {
         Glide.with(mContext).load(item).into((ImageView) helper.getView(R.id.photo_holder));
     }
+
+
 }

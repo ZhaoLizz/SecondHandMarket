@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -62,6 +63,8 @@ public class PublishActivity extends Activity {
 
     protected List<Uri> mSelectPhoto = new ArrayList<>();
     protected SelectedPhotoAdapter mPhotoAdapter;
+    @BindView(R.id.publish_progress_bar)
+    ProgressBar mPublishProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,9 +125,11 @@ public class PublishActivity extends Activity {
                 MyImageUtils.selectPic(this, REQUEST_CODE_CHOOSE);
                 break;
             case R.id.publish_btn:
-                if (BmobUser.getCurrentUser(User.class) != null) {
+                mPublishProgressBar.setVisibility(View.VISIBLE);
+                User curUser = BmobUser.getCurrentUser(User.class);
+                if (curUser != null) {
                     final Item item = new Item();
-                    item.setUser(BmobUser.getCurrentUser(User.class));
+                    item.setUser(curUser);
                     item.setTitle(mPbTitle.getText().toString());
                     item.setContent(mPbContent.getText().toString());
                     item.setType(DbConstant.ITEM_SELL);
@@ -151,6 +156,7 @@ public class PublishActivity extends Activity {
                                         @Override
                                         public void done(String s, BmobException e) {
                                             if (e == null) {
+                                                mPublishProgressBar.setVisibility(View.GONE);
                                                 Toast.makeText(PublishActivity.this, "成功发布宝贝信息！", Toast.LENGTH_SHORT).show();
                                                 finish();
                                             } else {
@@ -160,6 +166,7 @@ public class PublishActivity extends Activity {
                                     });
                                 }
                             }
+
                             @Override
                             public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
                                 Logger.d("curIndex: %d  ,curPercent %d  ,total  %d  ,totalPercent  %d", curIndex, curPercent, total, totalPercent);

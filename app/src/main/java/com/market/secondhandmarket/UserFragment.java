@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.market.secondhandmarket.constant.DbConstant;
 
@@ -53,29 +54,50 @@ public class UserFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.user_sell, R.id.user_tobuy, R.id.user_exit,R.id.user_set})
+    @OnClick({R.id.user_sell, R.id.user_tobuy, R.id.user_exit, R.id.user_set})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.user_sell:
-                mOnUserViewClickListener.onUserSellClick();
+                if (BmobUser.getCurrentUser() != null) {
+                    mOnUserViewClickListener.onUserSellClick();
+                } else {
+                    Toast.makeText(getActivity(), "请先登录!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                }
                 break;
             case R.id.user_tobuy:
-                mOnUserViewClickListener.onUserBuyClick();
+                if (BmobUser.getCurrentUser() != null) {
+                    mOnUserViewClickListener.onUserBuyClick();
+                } else {
+                    Toast.makeText(getActivity(), "请先登录!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                }
                 break;
             case R.id.user_exit:
-                BmobUser.logOut();
-                DbConstant.isManager = false;
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                getActivity().finish();
+                if (BmobUser.getCurrentUser() != null) {
+                    BmobUser.logOut();
+                    DbConstant.isManager = false;
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    getActivity().finish();
+                } else {
+                    Toast.makeText(getActivity(), "当前没有登录账号!", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             case R.id.user_set:
-                startActivity(new Intent(getActivity(), ChangeUserActivity.class));
+                if (BmobUser.getCurrentUser() != null) {
+                    startActivity(new Intent(getActivity(), ChangeUserActivity.class));
+                } else {
+                    Toast.makeText(getActivity(), "请先登录!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                }
                 break;
         }
     }
-
-
-
+    
     public interface OnUserViewClickListener {
         void onUserSellClick();
 

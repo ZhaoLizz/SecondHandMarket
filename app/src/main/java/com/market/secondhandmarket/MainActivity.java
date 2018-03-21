@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -24,7 +25,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.market.secondhandmarket.bean.User;
 import com.market.secondhandmarket.constant.DbConstant;
 import com.market.secondhandmarket.constant.UIConstant;
-import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton mPublishTobuy;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+    @BindView(R.id.main_progressbar)
+    ProgressBar mMainProgressbar;
 
     private SellListFragment mSellFragment;
     private BuyListFragment mBuyListFragment;
@@ -132,12 +134,24 @@ public class MainActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.publish_sale:
-                Intent intent = new Intent(this, PublishActivity.class);
-                startActivity(intent);
+                if (BmobUser.getCurrentUser() != null) {
+                    Intent intent = new Intent(this, PublishActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "请先登录!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                }
                 break;
             case R.id.publish_tobuy:
-                Intent intent2 = new Intent(this, ToBuyActivity.class);
-                startActivity(intent2);
+                if (BmobUser.getCurrentUser() != null) {
+                    Intent intent2 = new Intent(this, ToBuyActivity.class);
+                    startActivity(intent2);
+                } else {
+                    Toast.makeText(this, "请先登录!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                }
                 break;
         }
     }
@@ -175,11 +189,11 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(final String searchStr) {
-                switch (fragmentTAG) {
-                    case UIConstant.TAG_SELL:
+                switch (lastShowFragment) {
+                    case 0:
                         mSellFragment.searchItem(searchStr);
                         break;
-                    case UIConstant.TAG_TOBUY:
+                    case 1:
                         mBuyListFragment.searchItem(searchStr);
                         break;
                 }
@@ -249,11 +263,19 @@ public class MainActivity extends AppCompatActivity {
                         DbConstant.isManager = list.get(0).isManager();
                         initFragment();
                     } else {
+                        DbConstant.isManager = false;
                         initFragment();
                     }
                 }
             });
+        } else {
+            initFragment();
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

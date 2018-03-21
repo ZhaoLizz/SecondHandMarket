@@ -21,8 +21,8 @@
         android:id="@+id/fragment_coninter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_above="@+id/navigation"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/toolbar">
     </FrameLayout>
 
@@ -75,6 +75,13 @@
             app:fab_title="发布求购信息"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/main_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
 
 </RelativeLayout>

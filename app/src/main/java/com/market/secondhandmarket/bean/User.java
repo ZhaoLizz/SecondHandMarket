@@ -1,5 +1,7 @@
 package com.market.secondhandmarket.bean;
 
+import java.util.List;
+
 import cn.bmob.v3.BmobUser;
 
 /**
@@ -8,7 +10,8 @@ import cn.bmob.v3.BmobUser;
 
 public class User extends BmobUser {
     private String identity;        //昵称
-    private boolean isManager = false;
+    private boolean isManager;
+
 
     public boolean isManager() {
         return isManager;

@@ -2,7 +2,9 @@ package com.market.secondhandmarket;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.market.secondhandmarket.bean.ToBuyItem;
@@ -28,6 +30,8 @@ public class ToBuyActivity extends AppCompatActivity {
     EditText mTobuyContent;
     @BindView(R.id.tobuy_btn)
     QMUIRoundButton mTobuyBtn;
+    @BindView(R.id.buy_progress_bar)
+    ProgressBar mBuyProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class ToBuyActivity extends AppCompatActivity {
     @OnClick(R.id.tobuy_btn)
     public void onViewClicked() {
         if (BmobUser.getCurrentUser(User.class) != null) {
+            mBuyProgressBar.setVisibility(View.VISIBLE);
             ToBuyItem item = new ToBuyItem();
             item.setTitle(mTobuyName.getText().toString());
             item.setPrice(mTobuyPrice.getText().toString());
@@ -52,6 +57,7 @@ public class ToBuyActivity extends AppCompatActivity {
                     if (e == null) {
                         Logger.d("上传求购信息成功");
                         Toast.makeText(ToBuyActivity.this, "上传求购信息成功！", Toast.LENGTH_SHORT).show();
+                        mBuyProgressBar.setVisibility(View.GONE);
                         finish();
                     } else {
                         Logger.e(e.getMessage());

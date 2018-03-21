@@ -19,20 +19,27 @@ import android.widget.Toast;
 
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.Utils;
+import com.market.secondhandmarket.bean.BanUser;
 import com.market.secondhandmarket.bean.User;
 import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobInstallation;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,21 +49,36 @@ public class LoginActivity extends AppCompatActivity {
     private Button btGo;
     private CardView cv;
     private FloatingActionButton fab;
+    private List<User> banList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("main", "onCreate: ");
+        setContentView(R.layout.activity_login);
 
         //应用初始化
         Logger.addLogAdapter(new AndroidLogAdapter());        //Logger初始化
         Utils.init(getApplication());   //AndroidUtilCode初始化1
         Bmob.initialize(this, "fa6a000d3be3cc1df84347338bb012b4");
-        setContentView(R.layout.activity_login);
+        // 使用推送服务时的初始化操作
+        BmobInstallation.getCurrentInstallation().save();
+        // 启动推送服务
+        BmobPush.startWork(this);
         ButterKnife.bind(this);
         initView();
-        setListener();
 
+        QMUIStatusBarHelper.supportTransclentStatusBar6();
+        QMUIStatusBarHelper.translucent(LoginActivity.this);
+
+        setListener();
+        /*if (getIntent() != null) {
+            boolean isBanned = getIntent().getBooleanExtra("isBanned", false);
+            if (!isBanned) {
+
+            }
+        }*/
         //判断是否登录
         if (BmobUser.getCurrentUser(User.class) != null) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -90,17 +112,42 @@ public class LoginActivity extends AppCompatActivity {
                 if (account.length() == 0 || password.length() == 0) {
                     Toast.makeText(LoginActivity.this, "用户名或密码不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    User user = new User();
+                    final User user = new User();
                     user.setUsername(account);
                     user.setPassword(password);
                     user.login(new SaveListener<User>() {
                         @Override
-                        public void done(User bmobUser, BmobException e) {
+                        //bmobUser是当前登录上去的user
+                        public void done(final User bmobUser, BmobException e) {
                             KeyboardUtils.hideSoftInput(LoginActivity.this);
                             if (e == null) {
-                                ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
-                                Intent i2 = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(i2, oc2.toBundle());
+                                //判断登录的用户是不是在封禁名单中
+                                BmobQuery<BanUser> query = new BmobQuery<>();
+                                query.getObject(DbConstant.BANUSER_OBJECT_ID, new QueryListener<BanUser>() {
+                                    @Override
+                                    public void done(BanUser banUser, BmobException e) {
+                                        if (e == null) {
+                                            banList = banUser.getBannedUserList();
+                                            List<String> banUserObjects = new ArrayList<>();
+                                            if (banList != null) {
+                                                for (User bannedUser : banList) {
+                                                    banUserObjects.add(bannedUser.getObjectId());
+                                                }
+                                                if (banUserObjects.contains(bmobUser.getObjectId())) {
+                                                    BmobUser.logOut();
+                                                    Toast.makeText(LoginActivity.this, "您的账户已被封禁,无法登录!", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
+                                                    Intent i2 = new Intent(LoginActivity.this, MainActivity.class);
+                                                    startActivity(i2, oc2.toBundle());
+                                                }
+                                            }
+                                        } else {
+                                            Logger.e(e.getMessage());
+                                        }
+                                    }
+                                });
+
                             } else {
                                 if (e.getErrorCode() == 101) {
                                     Toast.makeText(LoginActivity.this, "用户名或密码不正确", Toast.LENGTH_SHORT).show();

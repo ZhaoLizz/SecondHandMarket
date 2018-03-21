@@ -3,7 +3,9 @@ package com.market.secondhandmarket;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -17,8 +19,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.market.secondhandmarket.bean.User;
-import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.Logger;
+import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,11 +41,14 @@ public class RegisterActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private CardView cvAdd;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
+        QMUIStatusBarHelper.supportTransclentStatusBar6();
+        QMUIStatusBarHelper.translucent(RegisterActivity.this);
         ShowEnterAnimation();
         initView();
         fab.setOnClickListener(new View.OnClickListener() {
@@ -59,6 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
         cvAdd = findViewById(R.id.cv_add);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void ShowEnterAnimation() {
         Transition transition = TransitionInflater.from(this).inflateTransition(R.transition.fabtransition);
         getWindow().setSharedElementEnterTransition(transition);
@@ -94,6 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void animateRevealShow() {
         Animator mAnimator = ViewAnimationUtils.createCircularReveal(cvAdd, cvAdd.getWidth() / 2, 0, fab.getWidth() / 2, cvAdd.getHeight());
         mAnimator.setDuration(500);
@@ -113,6 +120,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAnimator.start();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void animateRevealClose() {
         Animator mAnimator = ViewAnimationUtils.createCircularReveal(cvAdd, cvAdd.getWidth() / 2, 0, cvAdd.getHeight(), fab.getWidth() / 2);
         mAnimator.setDuration(500);
@@ -134,6 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAnimator.start();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
         animateRevealClose();

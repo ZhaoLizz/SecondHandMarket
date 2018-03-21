@@ -10,4 +10,5 @@ public class DbConstant {
     public static final String ITEM_SELL = "item_sell";
     public static final String ITEM_BUY = "item_buy";
     public static boolean isManager = false;
+    public static final String BANUSER_OBJECT_ID = "38163ac35b";
 }

@@ -42,14 +42,14 @@
 
             <TextView
                 android:id="@+id/tobuy_price"
-                android:layout_width="40dp"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="7dp"
                 android:layout_marginRight="7dp"
                 android:layout_marginTop="7dp"
                 android:singleLine="true"
-                android:text="150"
+                android:text="15000"
                 android:textColor="@android:color/holo_red_light"
                 android:textSize="20dp"/>
         </RelativeLayout>

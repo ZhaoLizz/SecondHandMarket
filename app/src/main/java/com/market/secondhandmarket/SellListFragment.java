@@ -1,12 +1,10 @@
 package com.market.secondhandmarket;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,9 +14,11 @@ import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.market.secondhandmarket.adapter.SellAdapter;
+import com.market.secondhandmarket.bean.BanUser;
 import com.market.secondhandmarket.bean.Item;
 import com.market.secondhandmarket.bean.User;
 import com.market.secondhandmarket.constant.DbConstant;
+import com.market.secondhandmarket.util.BmobUtils;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobBatch;
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
@@ -37,6 +36,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListListener;
 import cn.bmob.v3.listener.QueryListener;
+import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 /**
@@ -70,10 +70,10 @@ public class SellListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (!isUserOnly) {
-            fetchItem();
-        } else {
+        if (isUserOnly) {
             fetchUserItem();
+        } else {
+            fetchItem();
         }
 
         if (DbConstant.isManager) {
@@ -93,70 +93,132 @@ public class SellListFragment extends Fragment {
         mDialogFragment.setOnDeleteItemListener(new DeleteDialogFragment.OnDeleteItemListener() {
             @Override
             public void onDeleteItem(int position, final boolean isWarn, final boolean isBan, final boolean isNoteAll) {
+
                 final Item item = mItemList.remove(position);
                 //处理警告，封禁
                 if (isBan) {
-                    //在当前管理员User的banUserList字段添加被封禁用户的objectId
-                    User curUser = BmobUser.getCurrentUser(User.class);
-                    List<String> banUserList;
-                    if (curUser.getBanUserList() != null) {
-                        Logger.d(curUser.getBanUserList().size());
-                        banUserList = curUser.getBanUserList();
-                    } else {
-                        banUserList = new ArrayList<>();
-                    }
-                    banUserList.add(item.getUser().getObjectId());
-
-                    User newUser = new User();
-                    newUser.setManager(true);
-                    newUser.setBanUserList(banUserList);
-                    newUser.update(curUser.getObjectId(), new UpdateListener() {
+                    mRefershLayout.setRefreshing(true);
+                    //更新封禁列表
+                    BmobQuery<BanUser> query = new BmobQuery<>();
+                    query.getObject(DbConstant.BANUSER_OBJECT_ID, new QueryListener<BanUser>() {
                         @Override
-                        public void done(BmobException e) {
+                        public void done(BanUser banUser, BmobException e) {
                             if (e == null) {
-                                Logger.d("done");
-                            } else {
-                                Logger.e(e.getMessage());
+                                //封禁名单中没人
+                                if (banUser.getBannedUserList() == null) {
+                                    List<User> list = new ArrayList<>();
+                                    list.add(item.getUser());
+                                    banUser.setBannedUserList(list);
+                                    banUser.update(new UpdateListener() {
+                                        @Override
+                                        public void done(BmobException e) {
+                                            mRefershLayout.setRefreshing(false);
+                                            if (e == null) {
+                                                Toast.makeText(getActivity(), "封禁成功!", Toast.LENGTH_SHORT).show();
+                                                Logger.d("封禁成功");
+                                                //发送通知
+                                                BmobUtils.pushBmobMessage("您由于涉嫌违反社区制度被封禁账号处理!");
+                                            } else {
+                                                Logger.e(e.getMessage());
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    //封禁名单中有人
+                                    List<User> list = banUser.getBannedUserList();
+                                    list.add(item.getUser());
+                                    banUser.setBannedUserList(list);
+                                    banUser.update(new UpdateListener() {
+                                        @Override
+                                        public void done(BmobException e) {
+                                            mRefershLayout.setRefreshing(false);
+
+                                            if (e == null) {
+                                                Toast.makeText(getActivity(), "封禁成功!", Toast.LENGTH_SHORT).show();
+                                                Logger.d("封禁成功");
+                                                BmobUtils.pushBmobMessage("您由于涉嫌违反社区制度被封禁账号处理!");
+                                            } else {
+                                                Logger.e(e.getMessage());
+                                            }
+                                        }
+                                    });
+                                }
                             }
                         }
                     });
                 } else if (isWarn) {
-                    //在当前管理员User的banUserList字段添加被封禁用户的objectId
-                    User curUser = BmobUser.getCurrentUser(User.class);
-                    List<String> warnUserList;
-                    if (curUser.getBanUserList() != null) {
-                        Logger.d(curUser.getBanUserList().size());
-                        warnUserList = curUser.getBanUserList();
-                    } else {
-                        warnUserList = new ArrayList<>();
-                    }
-                    warnUserList.add(item.getUser().getObjectId());
+                    mRefershLayout.setRefreshing(true);
 
-                    User newUser = new User();
-                    newUser.setManager(true);
-                    newUser.setWarnUserList(warnUserList);
-                    newUser.update(curUser.getObjectId(), new UpdateListener() {
+                    //更新封禁列表
+                    BmobQuery<BanUser> query = new BmobQuery<>();
+                    query.getObject(DbConstant.BANUSER_OBJECT_ID, new QueryListener<BanUser>() {
                         @Override
-                        public void done(BmobException e) {
+                        public void done(BanUser banUser, BmobException e) {
                             if (e == null) {
-                                Logger.d("done");
-                            } else {
-                                Logger.e(e.getMessage());
+                                //封禁名单中没人
+                                if (banUser.getWarnedUserList() == null) {
+                                    List<User> list = new ArrayList<>();
+                                    list.add(item.getUser());
+                                    banUser.setWarnedUserList(list);
+                                    banUser.update(new UpdateListener() {
+                                        @Override
+                                        public void done(BmobException e) {
+                                            if (e == null) {
+                                                mRefershLayout.setRefreshing(false);
+
+                                                Toast.makeText(getActivity(), "警告成功!", Toast.LENGTH_SHORT).show();
+                                                Logger.d("警告成功");
+                                                //发送通知
+                                                BmobUtils.pushBmobMessage("您由于涉嫌违反社区制度被警告!");
+                                            } else {
+                                                Logger.e(e.getMessage());
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    //封禁名单中有人
+                                    List<User> list = banUser.getWarnedUserList();
+                                    list.add(item.getUser());
+                                    banUser.setWarnedUserList(list);
+                                    banUser.update(new UpdateListener() {
+                                        @Override
+                                        public void done(BmobException e) {
+                                            if (e == null) {
+                                                mRefershLayout.setRefreshing(false);
+
+                                                Toast.makeText(getActivity(), "警告成功!", Toast.LENGTH_SHORT).show();
+                                                Logger.d("警告成功  " + item.getUser().getUsername());
+                                                BmobUtils.pushBmobMessage("您由于涉嫌违反社区制度被警告!");
+                                            } else {
+                                                Logger.e(e.getMessage());
+                                            }
+                                        }
+                                    });
+                                }
                             }
                         }
                     });
+
+                }
+                if (isNoteAll) {
+                    if (isBan) {
+                        BmobUtils.pushBmobMessage("用户 " + item.getUser().getObjectId() + " 由于涉嫌违反社区规定被警告");
+                    } else if (isWarn) {
+                        BmobUtils.pushBmobMessage("用户 " + item.getUser().getObjectId() + " 由于涉嫌违反社区规定被封禁账号");
+                    }
                 }
                 //删除数据
-                /*item.delete(new UpdateListener() {
+                item.delete(new UpdateListener() {
                     @Override
                     public void done(BmobException e) {
+                        mRefershLayout.setRefreshing(false);
                         if (e == null) {
                             fetchItem();
                         } else {
                             Logger.e(e.getMessage());
                         }
                     }
-                });*/
+                });
             }
         });
 
@@ -204,10 +266,12 @@ public class SellListFragment extends Fragment {
      * 从数据库中加载数据
      */
     public void fetchItem() {
+        mRefershLayout.setRefreshing(true);
         BmobQuery<Item> query = new BmobQuery<>();
         query.findObjects(new FindListener<Item>() {
             @Override
             public void done(List<Item> list, BmobException e) {
+                mRefershLayout.setRefreshing(false);
                 if (e == null) {
                     if (list != null) {
                         mItemList.clear();
@@ -224,11 +288,13 @@ public class SellListFragment extends Fragment {
 
 
     public void searchItem(final String searchStr) {
+        mRefershLayout.setRefreshing(true);
         Logger.d("searchItem");
         BmobQuery<Item> query = new BmobQuery<>();
         query.findObjects(new FindListener<Item>() {
             @Override
             public void done(List<Item> list, BmobException e) {
+                mRefershLayout.setRefreshing(false);
                 if (e == null) {
                     if (list != null) {
                         List<Item> resultList = new ArrayList<>();
@@ -259,6 +325,9 @@ public class SellListFragment extends Fragment {
                 mItemList.addAll(list);
                 mRefershLayout.setRefreshing(false);
                 mSellAdapter.notifyDataSetChanged();
+                if (list.size() == 0) {
+                    Toast.makeText(getActivity(), "没有发布过任何信息!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -291,35 +360,4 @@ public class SellListFragment extends Fragment {
             });
         }
     }
-
-    private void noteAllUser(final String noteMessage) {
-        BmobQuery<User> queryUser = new BmobQuery<>();
-        final List<BmobObject> bmobObjectList = new ArrayList<>();
-
-        queryUser.findObjects(new FindListener<User>() {
-            @Override
-            public void done(List<User> list, BmobException e) {
-                if (e == null) {
-                    Logger.d(list.size());
-                    for (User user : list) {
-//                        user.setNoteAllMessage(noteMessage);
-                        bmobObjectList.add(user);
-                    }
-                    new BmobBatch().updateBatch(bmobObjectList)
-                            .doBatch(new QueryListListener<BatchResult>() {
-                                @Override
-                                public void done(List<BatchResult> list, BmobException e) {
-                                    if (e == null) {
-                                        Logger.d(list.size());
-                                    } else {
-                                        Logger.e(e.getMessage());
-                                    }
-                                }
-                            });
-                }
-            }
-        });
-    }
-
-
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.market.secondhandmarket.bean.User;
+import com.market.secondhandmarket.constant.DbConstant;
 import com.orhanobut.logger.Logger;
 import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -37,8 +38,8 @@ public class ChangeUserActivity extends Activity {
     @OnClick(R.id.set_btn)
     public void onViewClicked() {
         User curuser = BmobUser.getCurrentUser(User.class);
-
         User user = new User();
+        user.setManager(DbConstant.isManager);
         user.setEmail(mSetEmil.getText().toString());
         user.setMobilePhoneNumber(mSetPhone.getText().toString());
         user.setIdentity(mSetNick.getText().toString());
